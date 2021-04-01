@@ -10,15 +10,24 @@ import java.util.*;
 public class SudokuSolver {
 
 	Scanner scanner = new Scanner(System.in);
-	private Square sudokuSquares[][] = new Square[9][9];
-	
+	SudokuPuzzle sudokuPuzzle;
+	HiddenStrategy hiddenStrategy;
+	NakedStrategy nakedStrategy;
+	PointingPairStrategy pointingPairStrategy;
+	WingStrategy wingStrategy;
+
 	/**
-	 * This is the constructor.  It gets sudoku numbers from user and makes sure they are valid
+	 * Constructor.  It gets sudoku numbers from user and makes sure they are valid
 	 * @param getSudokuFromUser  This is true if we want to get the sudoku values from the user
 	 */
 	public SudokuSolver(boolean getSudokuFromUser) {
-		
-		
+
+		sudokuPuzzle = new SudokuPuzzle();
+		hiddenStrategy = new HiddenStrategy();
+		nakedStrategy = new NakedStrategy();
+		pointingPairStrategy = new PointingPairStrategy();
+		wingStrategy = new WingStrategy();
+
 		if(getSudokuFromUser) {
 			//Get sudoku numbers from user
 			String sudokuNumbersString = getSudokuNumbers();
@@ -31,9 +40,9 @@ public class SudokuSolver {
 				else
 					sudokuNumbersString = getSudokuNumbers();
 			}
-			
-			
-			sudokuSquares = fillSudokuArray(sudokuNumbersString);
+
+
+			sudokuPuzzle.fillSudokuArray(sudokuNumbersString);
 
 		}
 	}
@@ -43,8 +52,11 @@ public class SudokuSolver {
 	 * @param sudokuNumbers String  This is the sudoku values with zeros for empty values.  The values should be input from left to right, top to bottom.
 	 */
 	public SudokuSolver(String sudokuNumbers) {
-		
-		
+
+		hiddenStrategy = new HiddenStrategy();
+		nakedStrategy = new NakedStrategy();
+		pointingPairStrategy = new PointingPairStrategy();
+		wingStrategy = new WingStrategy();
 
 		//Get sudoku numbers from input
 		String sudokuNumbersString = sudokuNumbers;
@@ -57,41 +69,14 @@ public class SudokuSolver {
 			else
 				sudokuNumbersString = getSudokuNumbers();
 		}
-		
-		
-		sudokuSquares = fillSudokuArray(sudokuNumbersString);
+
+
+		sudokuPuzzle.fillSudokuArray(sudokuNumbersString);
 
 	}
 	
 	
-	/**
-	 * This converts the users sudoku numbers string into a sudoku 2 dimensional array of Square objects
-	 * @param sudokuNumbersString String  This is the sudoku values with zeros for empty values.  The values should be input from left to right, top to bottom.
-	 * @return Square[][]  This returns a 2d array of squares
-	 */
-	public Square[][] fillSudokuArray(String sudokuNumbersString) {
 
-		int rowNum = 0;
-		int columnNum = 0;
-		
-		
-		for(int i = 0;i < sudokuNumbersString.length();i++) {
-			sudokuSquares[columnNum][rowNum] = new Square(Character.getNumericValue(sudokuNumbersString.charAt(i)));
-			
-			//System.out.println("sudokuNumbers[" + columnNum + "][" + rowNum + "] = " + Character.getNumericValue(sudokuNumbersString.charAt(i)));
-			//Jump to next row if we are at the end of a row.  If not then just go to next square.
-			if(columnNum >= 8) {
-				rowNum++;
-				columnNum = 0;
-			}
-			else
-				columnNum++;
-				
-			
-		}
-		
-		return sudokuSquares;
-	}
 	
 	/**
 	 * This gets sudoku values from the user
@@ -111,14 +96,13 @@ public class SudokuSolver {
 	 * This goes through and uses sudoku strategies to solve the sudoku puzzle
 	 */
 	public void solveSudoku() {
-		SudokuStrategies sudokuStrategies = new SudokuStrategies();
 		boolean sudokuFinished = false;
 		
 		//Fill in all possible values for square that don't have a value
-		sudokuStrategies.addAllPossibilities(sudokuSquares);
+		sudokuPuzzle.addAllPossibilities();
 		
 		//For each value we find, remove all possible values from squares in that row, column, and block
-		sudokuStrategies.removePossibilities(sudokuSquares);
+		hiddenStrategy.removePossibilities(sudokuPuzzle.getSudokuSquares());
 		
 		int counter = 0;
 		boolean madeProgress = false;
@@ -128,66 +112,57 @@ public class SudokuSolver {
 			counter++;
 					
 			//Find all the only choice values
-			madeProgress = sudokuStrategies.findOnlyChoice(sudokuSquares);
-			
-			if(madeProgress && sudokuStrategies.getSquaresBlank() == 0) {
-				sudokuFinished = true;
-				break;
-			}
+			sudokuPuzzle.setSudokuSquares(hiddenStrategy.findOnlyChoice(sudokuPuzzle.getSudokuSquares()));
 			
 			//Find all the naked singles
-			madeProgress = sudokuStrategies.findNakedSingle(sudokuSquares);
-			
-			if(madeProgress && sudokuStrategies.getSquaresBlank() == 0) {
-				sudokuFinished = true;
-				break;
-			}
+			sudokuPuzzle.setSudokuSquares(nakedStrategy.findNakedSingle(sudokuPuzzle.getSudokuSquares()));
+
 			
 			//Find all the hidden singles
-			madeProgress = sudokuStrategies.findHiddenSingle(sudokuSquares);
-			
-			if(madeProgress && sudokuStrategies.getSquaresBlank() == 0) {
-				sudokuFinished = true;
-				break;
-			}
+			sudokuPuzzle.setSudokuSquares(hiddenStrategy.findHiddenSingle(sudokuPuzzle.getSudokuSquares(), sudokuPuzzle.allPossValues));
+
 			
 			//Find all the naked pairs
-			madeProgress = sudokuStrategies.findNakedPairs(sudokuSquares);
+			sudokuPuzzle.setSudokuSquares(nakedStrategy.findNakedPairs(sudokuPuzzle.getSudokuSquares()));
 			
-			if(madeProgress && sudokuStrategies.getSquaresBlank() == 0) {
-				sudokuFinished = true;
-				break;
-			}
+			//Find all pointing pairs combinations in rows
+			sudokuPuzzle.setSudokuSquares(pointingPairStrategy.findPointingPairsInRow(sudokuPuzzle.getSudokuSquares()));
+
+			
+			//Find all pointing pairs combinations in blocks
+			sudokuPuzzle.setSudokuSquares(pointingPairStrategy.findPointingPairsInBlock(sudokuPuzzle.getSudokuSquares()));
 			
 			//Find all the naked triples
-			madeProgress = sudokuStrategies.findNakedTriples(sudokuSquares);
+			/**madeProgress = sudokuPuzzle.findNakedTriples(sudokuSquares);
 			
-			if(madeProgress && sudokuStrategies.getSquaresBlank() == 0) {
+			if(madeProgress && sudokuPuzzle.getSquaresBlank() == 0) {
 				sudokuFinished = true;
 				break;
-			}
+			}*/
 			
 			//Find all ywing combinations
-			madeProgress = sudokuStrategies.findYWingRowColumn(sudokuSquares);
-			
-			if(madeProgress && sudokuStrategies.getSquaresBlank() == 0) {
-				sudokuFinished = true;
-				break;
-			}
+			sudokuPuzzle.setSudokuSquares(wingStrategy.findYWingRowColumn(sudokuPuzzle.getSudokuSquares()));
+
 			
 			//Find all ywing combinations
-			madeProgress = sudokuStrategies.findYWingBlock(sudokuSquares);
+			sudokuPuzzle.setSudokuSquares(wingStrategy.findYWingBlock(sudokuPuzzle.getSudokuSquares()));
+
+
+			//Find all xwing combinations
+			sudokuPuzzle.setSudokuSquares(wingStrategy.findXWingInRows(sudokuPuzzle.getSudokuSquares()));
+
 			
-			if(madeProgress && sudokuStrategies.getSquaresBlank() == 0) {
-				sudokuFinished = true;
-				break;
-			}
+			//Find all xwing combinations
+			sudokuPuzzle.setSudokuSquares(wingStrategy.findXWingInColumns(sudokuPuzzle.getSudokuSquares()));
+
 
 			
 			//System.out.println("Still running");
 		} while(!sudokuFinished && counter < 1000);
 		System.out.println("Sudoku Is Finished!");
-		printSudoku(sudokuSquares);
+		//System.out.println(sudokuPuzzle.getSudokuValuesString(sudokuSquares));
+		sudokuPuzzle.printAllPossibilities();
+		printSudoku(sudokuPuzzle.getSudokuSquares());
 		
 	}
 	
@@ -218,14 +193,6 @@ public class SudokuSolver {
 		}
 		
 		return true;
-	}
-	
-	/**
-	 * This gets the sudoku squares
-	 * @return Square[][] This is a 2d array of squares
-	 */
-	public Square[][] getSudokuSquares() {
-		return sudokuSquares;
 	}
 	
 	/**
