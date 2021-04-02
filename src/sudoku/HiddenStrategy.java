@@ -1,7 +1,6 @@
 package sudoku;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class HiddenStrategy extends Strategy{
 
@@ -10,35 +9,27 @@ public class HiddenStrategy extends Strategy{
      * @param sudokuSquares  This is a 2D array of squares
      * @return boolean This method returns true if any possible number is removed due to finding a hidden single
      */
-    public Square[][] findHiddenSingle(Square sudokuSquares[][], Integer allPossValues[]) {
-        boolean foundHiddenSingleCandidate = false;
+    public Square[][] findHiddenSingle(Square[][] sudokuSquares, Integer[] allPossValues) {
 
         //Go through each row and set hidden single candidates
         for(int i = 0;i < SUDOKU_MAX_ROW_SQUARES;i++) {
             //for every possible value check each row to see if there is only one square that has the value
-            for(Integer possValue : allPossValues) {
-                if(setHiddenSingleInRow(possValue, i, sudokuSquares))
-                    foundHiddenSingleCandidate = true;
-
-            }
+            for(Integer possValue : allPossValues)
+                sudokuSquares = setHiddenSingleInRow(possValue, i, sudokuSquares);
         }
 
         //Go through each column and set hidden candidates
         for(int i = 0;i < SUDOKU_MAX_COLUMN_SQUARES; i++) {
             //for every possible value check each column to see if there is only one square that has the value
-            for(Integer possValue : allPossValues) {
-                if(setHiddenSingleInColumn(possValue, i, sudokuSquares))
-                    foundHiddenSingleCandidate = true;
-            }
+            for(Integer possValue : allPossValues)
+                sudokuSquares = setHiddenSingleInColumn(possValue, i, sudokuSquares);
         }
 
         //Go through each block and set hidden candidates
         for(int i = 0;i < SUDOKU_MAX_BLOCKS; i++) {
             //for every possible value check each block to see if there is only one square that has the value
-            for(Integer possValue : allPossValues) {
-                if(setHiddenSingleInBlock(possValue, i, sudokuSquares))
-                    foundHiddenSingleCandidate = true;
-            }
+            for(Integer possValue : allPossValues)
+                sudokuSquares = setHiddenSingleInBlock(possValue, i, sudokuSquares);
         }
 
         return sudokuSquares;
@@ -51,12 +42,11 @@ public class HiddenStrategy extends Strategy{
      * @param sudokuSquares This is a 2D array of squares
      * @return boolean Returns true if a hidden single was found
      */
-    public boolean setHiddenSingleInRow(int possNum, int rowNum, Square sudokuSquares[][] ) {
+    public Square[][] setHiddenSingleInRow(int possNum, int rowNum, Square[][] sudokuSquares ) {
 
         int numPossibilities = 0;
         int tempX = 0;
         int tempY = 0;
-        boolean foundHiddenSingle = false;
 
         //Search every square for hidden single
         for(int i = 0; i < sudokuSquares.length; i++) {
@@ -83,30 +73,10 @@ public class HiddenStrategy extends Strategy{
             removePossibilitiesFromColumn(tempX, tempY, sudokuSquares);
             removePossibilitiesFromBlock(tempX, tempY, sudokuSquares);
 
-            foundHiddenSingle = true;
         }
 
 
-        return foundHiddenSingle;
-    }
-
-    /**
-     * This will go through all known numbers and remove any possibilities of any of the squares in the same row, column, and block
-     * @param sudokuSquares This is a 2D array of squares
-     */
-    public void removePossibilities(Square sudokuSquares[][]) {
-        //go through ever square and if number is found, remove that possibility from squares in same row,
-        //column, and 9 square section
-        for(int i = 0;i < 9;i++) {
-            for(int j = 0;j < 9;j++) {
-                if(sudokuSquares[i][j].getValue() != 0) {
-                    //System.out.println("Removing possibilities for value: " + sudokuSquares[i][j].getValue() + "for [" + i + "][" + j + "]");
-                    removePossibilitiesFromRow(i, j, sudokuSquares);
-                    removePossibilitiesFromColumn(i, j, sudokuSquares);
-                    removePossibilitiesFromBlock(i, j, sudokuSquares);
-                }
-            }
-        }
+        return sudokuSquares;
     }
 
     /**
@@ -114,9 +84,7 @@ public class HiddenStrategy extends Strategy{
      * @param sudokuSquares  This is a 2D array of squares
      * @return boolean  This is if we found a new only choice square or not
      */
-    public Square[][] findOnlyChoice(Square sudokuSquares[][]) {
-
-        boolean foundOnlyChoice = false;
+    public Square[][] findOnlyChoice(Square[][] sudokuSquares) {
 
         //Go through every square and if number is found, remove that possibility from squares in same row,
         //column, and 9 square section
@@ -131,7 +99,6 @@ public class HiddenStrategy extends Strategy{
 
                         if(getNumOnlyChoiceInRow(possNum, rowNum, sudokuSquares) == 1) {
                             sudokuSquares[columnNum][rowNum].setValue(possNum);
-                            foundOnlyChoice = true;
 
                             //Remove possibilities for the number we just set
                             removePossibilitiesFromRow(columnNum, rowNum, sudokuSquares);
@@ -143,7 +110,6 @@ public class HiddenStrategy extends Strategy{
 
                         if(getNumOnlyChoiceInColumn(possNum, columnNum, sudokuSquares) == 1) {
                             sudokuSquares[columnNum][rowNum].setValue(possNum);
-                            foundOnlyChoice = true;
 
                             //Remove possibilities for the number we just set
                             removePossibilitiesFromRow(columnNum, rowNum, sudokuSquares);
@@ -155,7 +121,6 @@ public class HiddenStrategy extends Strategy{
 
                         if(getNumOnlyChoiceInBlock(possNum, rowNum, columnNum, sudokuSquares) == 1) {
                             sudokuSquares[columnNum][rowNum].setValue(possNum);
-                            foundOnlyChoice = true;
 
                             //Remove possibilities for the number we just set
                             removePossibilitiesFromRow(columnNum, rowNum, sudokuSquares);
@@ -181,11 +146,10 @@ public class HiddenStrategy extends Strategy{
      * @param sudokuSquares This is a 2D array of squares
      * @return boolean This returns true if a hidden single was found in a column
      */
-    public boolean setHiddenSingleInColumn(int possNum, int columnNum, Square sudokuSquares[][]) {
+    public Square[][] setHiddenSingleInColumn(int possNum, int columnNum, Square[][] sudokuSquares) {
         int numPossibilities = 0;
         int tempX = 0;
         int tempY = 0;
-        boolean foundHiddenSingle = false;
 
         for(int i = 0; i < sudokuSquares.length; i++) {
             if(sudokuSquares[columnNum][i].getValue() == 0) {
@@ -207,15 +171,14 @@ public class HiddenStrategy extends Strategy{
             sudokuSquares[tempX][tempY].setValue(possNum);
 
             //Remove possibilities for the number we just set
-            removePossibilitiesFromRow(tempX, tempY, sudokuSquares);
-            removePossibilitiesFromColumn(tempX, tempY, sudokuSquares);
-            removePossibilitiesFromBlock(tempX, tempY, sudokuSquares);
+            sudokuSquares = removePossibilitiesFromRow(tempX, tempY, sudokuSquares);
+            sudokuSquares = removePossibilitiesFromColumn(tempX, tempY, sudokuSquares);
+            sudokuSquares = removePossibilitiesFromBlock(tempX, tempY, sudokuSquares);
 
-            foundHiddenSingle = true;
         }
 
 
-        return foundHiddenSingle;
+        return sudokuSquares;
     }
 
 
@@ -226,11 +189,10 @@ public class HiddenStrategy extends Strategy{
      * @param sudokuSquares This is a 2D array of squares
      * @return boolean This returns true if a hidden single was found in a block
      */
-    public boolean setHiddenSingleInBlock(int possNum, int blockNum, Square sudokuSquares[][]) {
+    public Square[][] setHiddenSingleInBlock(int possNum, int blockNum, Square[][] sudokuSquares) {
         int numPossibilities = 0;
         int tempX = 0;
         int tempY = 0;
-        boolean foundHiddenSingle = false;
 
         ArrayList<SquareCoordinate> squareNumbersList = blockNumSquareNumbers.get(blockNum);
 
@@ -260,33 +222,9 @@ public class HiddenStrategy extends Strategy{
             removePossibilitiesFromRow(tempX, tempY, sudokuSquares);
             removePossibilitiesFromColumn(tempX, tempY, sudokuSquares);
             removePossibilitiesFromBlock(tempX, tempY, sudokuSquares);
-
-            foundHiddenSingle = true;
         }
 
 
-        return foundHiddenSingle;
-    }
-
-    /**
-     * This method finds hidden doubles in a sudoku
-     * @param sudokuSquares  This is a 2D array of squares
-     * @return boolean This method returns true if any possible number is removed due to finding a hidden double
-     */
-    public boolean findHiddenDoubles(Square sudokuSquares[][]) {
-        boolean foundHiddenDouble = false;
-        //TODO: Finish this
-        return foundHiddenDouble;
-    }
-
-    /**
-     * This method finds hidden triples in a sudoku
-     * @param sudokuSquares  This is a 2D array of squares
-     * @return boolean This method returns true if any possible number is removed due to finding a hidden double
-     */
-    public boolean findHiddenTriples(Square sudokuSquares[][]) {
-        boolean foundHiddenDouble = false;
-        //TODO: Finish this
-        return foundHiddenDouble;
+        return sudokuSquares;
     }
 }

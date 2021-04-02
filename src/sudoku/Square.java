@@ -11,7 +11,7 @@ import java.util.*;
 public class Square implements Comparable<Square>{
 
 	private int value;
-	private ArrayList<Integer> possibleValues = new ArrayList<Integer>();
+	private ArrayList<Integer> possibleValues = new ArrayList<>();
 	private boolean isNakedPair;
 	
 	/**
@@ -60,9 +60,9 @@ public class Square implements Comparable<Square>{
 	 * This sets the possible numbers of a square
 	 * @param nums Integer[]  This is the possible numbers of the square
 	 */
-	public void setPossibleValues(Integer nums[]) {
-		for(Integer i = 0; i < nums.length; i++) {
-			possibleValues.add(nums[i]);
+	public void setPossibleValues(Integer[] nums) {
+		for(Integer num : nums) {
+			possibleValues.add(num);
 		}
 	}
 	
@@ -76,13 +76,13 @@ public class Square implements Comparable<Square>{
 	
 	/**
 	 * This checks to see if square has a possible value 
-	 * @param value
+	 * @param value Value to check for
 	 * @return boolean  This returns true if square has possible value 
 	 */
 	public boolean hasPossibleValue(Integer value) {
 		ArrayList<Integer> possibleValuesList = getPossibleValues();
 		for(Integer possValue : possibleValuesList) {
-			if(possValue == value)
+			if(possValue.equals(value))
 				return true;
 		}
 		
@@ -153,7 +153,7 @@ public class Square implements Comparable<Square>{
 		
 			
 			for(int k = 0;k < possValueList1.size();k++) {
-				if(possValueList1.get(k) != possValueList2.get(k)) {
+				if(!possValueList1.get(k).equals(possValueList2.get(k))) {
 					System.out.println("possValue different");
 					return -1;
 				}

@@ -1505,7 +1505,7 @@ public class SudokuStrategies {
 	}
 	
 
-	public boolean findXWing(Square sudokuSquares[][]) {
+	public Square[][] findXWing(Square sudokuSquares[][]) {
 		// Go through each square (x,y)
 		  //If square has only 2 possible numbers and value is 0
 		    //Search each square left in row
@@ -1577,6 +1577,7 @@ public class SudokuStrategies {
 				}
 			}
 		}
+		return sudokuSquares;
 	}
 	
 	/**

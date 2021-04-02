@@ -1,7 +1,6 @@
 package sudoku;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class PointingPairStrategy extends Strategy{
 
@@ -10,9 +9,7 @@ public class PointingPairStrategy extends Strategy{
      * @param sudokuSquares 2d array of squares
      * @return Returns true if possibilities were removed due to finding pointing pairs
      */
-    public Square[][] findPointingPairsInBlock(Square sudokuSquares[][]) {
-
-        boolean foundNewPointingPair = false;
+    public Square[][] findPointingPairsInBlock(Square[][] sudokuSquares) {
 
         //For each possible number
         for(int possNum = 1; possNum <= 9; possNum++) {
@@ -62,8 +59,7 @@ public class PointingPairStrategy extends Strategy{
                                 //Remove possible number
                                 square.removePossibleValue(possNum);
                                 System.out.println("Found Pointing Pair at [" + firstColumnNum + "][" + firstRowNum + "] [" + secondColumnNum + "][" + secondRowNum + "].  Removed " + possNum + " from [" + columnNum + "][" + firstRowNum + "]");
-                                //Set found new pointing pair to true
-                                foundNewPointingPair = true;
+
                             }
                         }
                     }
@@ -80,8 +76,7 @@ public class PointingPairStrategy extends Strategy{
                                 //Remove possible number
                                 square.removePossibleValue(possNum);
                                 System.out.println("Found Pointing Pair at [" + firstColumnNum + "][" + firstRowNum + "] [" + secondColumnNum + "][" + secondRowNum + "].  Removed " + possNum + " from [" + firstColumnNum + "][" + rowNum + "]");
-                                //Set found new pointing pair to true
-                                foundNewPointingPair = true;
+
                             }
                         }
                     }
@@ -99,8 +94,7 @@ public class PointingPairStrategy extends Strategy{
      * @param sudokuSquares 2d array of squares
      * @return Returns true if possibilities were removed due to finding pointing pairs
      */
-    public Square[][] findPointingPairsInRow(Square sudokuSquares[][]) {
-        boolean foundNewPointingPair = false;
+    public Square[][] findPointingPairsInRow(Square[][] sudokuSquares) {
 
         //For each possible number
         for(int possNum = 1; possNum <= 9; possNum++) {
@@ -153,8 +147,7 @@ public class PointingPairStrategy extends Strategy{
                                 //Remove possible number
                                 square.removePossibleValue(possNum);
                                 System.out.println("Found Pointing Pair at [" + firstColumnNum + "][" + firstRowNum + "] [" + secondColumnNum + "][" + secondRowNum + "].  Removed " + possNum + " from [" + squareCoord.columnNum + "][" + squareCoord.rowNum + "]");
-                                //Set found new pointing pair to true
-                                foundNewPointingPair = true;
+
                             }
                         }
                     }

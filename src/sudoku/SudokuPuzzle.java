@@ -9,13 +9,11 @@ import java.util.*;
  */
 public class SudokuPuzzle {
 
-	Integer allPossValues[] = new Integer[] {1,2,3,4,5,6,7,8,9};
-	private Square sudokuSquares[][] = new Square[9][9];
+	Integer[] allPossValues = new Integer[] {1,2,3,4,5,6,7,8,9};
+	private Square[][] sudokuSquares = new Square[9][9];
 
 	private static final int SUDOKU_MAX_ROW_SQUARES = 9;
 	private static final int SUDOKU_MAX_COLUMN_SQUARES = 9;
-	private static final int SUDOKU_MAX_BLOCKS = 9;
-	private static final int SUDOKU_MAX_POSS_NUMS = 9;
 
 
 	/**
@@ -85,12 +83,10 @@ public class SudokuPuzzle {
 		for(int i = 0;i < 9;i++) {
 			for(int j = 0;j < 9;j++) {
 				if(sudokuSquares[j][i].getValue() == 0) {
-					ArrayList<Integer> possValList = sudokuSquares[j][i].getPossibleValues();;
-					
+					ArrayList<Integer> possValList = sudokuSquares[j][i].getPossibleValues();
 					System.out.print("Possible values for [" + j + "][" + i + "]");
 					for(Integer possVal : possValList )
 						System.out.print(" " + possVal);
-					System.out.println("");
 
 				}
 			}
@@ -101,10 +97,11 @@ public class SudokuPuzzle {
 
 	
 	/**
-	 * Returns a string of all the current values of the sudoku going left to right top to bottom
-	 * @return
+	 *
+	 * @return Returns a string of all the current values of the sudoku going left to right top to bottom
 	 */
 	public String getSudokuValuesString() {
+		//TODO: Change this to StringBuilder
 		String sudokuNumbersString = "";
 		
 		for(int rowNum = 0; rowNum < SUDOKU_MAX_ROW_SQUARES;rowNum++) {

@@ -5,7 +5,7 @@ import java.util.HashMap;
 
 public class Strategy {
 
-    public class SquareCoordinate {
+    public static class SquareCoordinate {
 
         public int columnNum;
         public int rowNum;
@@ -23,13 +23,11 @@ public class Strategy {
     public static final int SUDOKU_MAX_POSS_NUMS = 9;
 
     public Strategy() {
-        this.blockNumSquareNumbers = blockNumSquareNumbers;
-        
         //Setup a hash with block number as key and the square numbers for each block as the values
         setBlockNumSquareNumbers();
     }
 
-    public HashMap<Integer, ArrayList<SquareCoordinate>> blockNumSquareNumbers = new HashMap<Integer, ArrayList<SquareCoordinate>>();
+    public HashMap<Integer, ArrayList<SquareCoordinate>> blockNumSquareNumbers = new HashMap<>();
     
     /**
      * Gets number of a specific possible number for all squares in the same row that do not already have a value
@@ -38,7 +36,7 @@ public class Strategy {
      * @param sudokuSquares  This is a 2D array of squares
      * @return int  This is the number of possibilities we find in the row
      */
-    public int getNumOnlyChoiceInRow(int possNum, int rowNum, Square sudokuSquares[][]) {
+    public int getNumOnlyChoiceInRow(int possNum, int rowNum, Square[][] sudokuSquares) {
 
         int numPossibilities = 0;
 
@@ -71,7 +69,7 @@ public class Strategy {
      * @param sudokuSquares  This is a 2D array of squares
      * @return int  This is the number of possibilities we find in the column
      */
-    public int getNumOnlyChoiceInColumn(int possNum, int columnNum, Square sudokuSquares[][]) {
+    public int getNumOnlyChoiceInColumn(int possNum, int columnNum, Square[][] sudokuSquares) {
 
         int numPossibilities = 0;
 
@@ -105,9 +103,9 @@ public class Strategy {
      * @param sudokuSquares  This is a 2D array of squares
      * @return int  This is the number of possibilities we find in the block
      */
-    public int getNumOnlyChoiceInBlock(int possNum, int rowNum, int columnNum, Square sudokuSquares[][]) {
+    public int getNumOnlyChoiceInBlock(int possNum, int rowNum, int columnNum, Square[][] sudokuSquares) {
         int numPossibilities = 0;
-        int blockNum = 0;
+        int blockNum;
 
         //Get what block number this square resides in
         blockNum = getBlockNum(columnNum, rowNum);
@@ -152,7 +150,7 @@ public class Strategy {
         //Build all the blocks and square numbers that go in those blocks
         for(int i=0; i < SUDOKU_MAX_BLOCKS; i++) {
 
-            ArrayList <SquareCoordinate> tempCoordinates = new ArrayList<SquareCoordinate>();
+            ArrayList <SquareCoordinate> tempCoordinates = new ArrayList<>();
 
             //For every row num in block
             for(int blockRowNum=0; blockRowNum < 3; blockRowNum++) {
@@ -193,7 +191,7 @@ public class Strategy {
      * top to bottom
      * @param columnNum int This is the column number of the square
      * @param rowNum int This is the row number of the square
-     * @return
+     * @return Returns the block number for the column/row pair
      */
     public int getBlockNum(int columnNum, int rowNum) {
         int blockNum = 0;
@@ -225,12 +223,33 @@ public class Strategy {
     }
 
     /**
+     * This will go through all known numbers and remove any possibilities of any of the squares in the same row, column, and block
+     * @param sudokuSquares This is a 2D array of squares
+     */
+    public Square[][] removePossibilities(Square[][] sudokuSquares) {
+        //go through ever square and if number is found, remove that possibility from squares in same row,
+        //column, and 9 square section
+        for(int i = 0;i < 9;i++) {
+            for(int j = 0;j < 9;j++) {
+                if(sudokuSquares[i][j].getValue() != 0) {
+                    //System.out.println("Removing possibilities for value: " + sudokuSquares[i][j].getValue() + "for [" + i + "][" + j + "]");
+                    sudokuSquares = removePossibilitiesFromRow(i, j, sudokuSquares);
+                    sudokuSquares = removePossibilitiesFromColumn(i, j, sudokuSquares);
+                    sudokuSquares = removePossibilitiesFromBlock(i, j, sudokuSquares);
+                }
+            }
+        }
+
+        return sudokuSquares;
+    }
+
+    /**
      * This method removes possibilities for all squares in the same row that do not already have a value
      * @param columnNum  This is the row number of the square
      * @param rowNum  This is the row number of the square
      * @param sudokuSquares  This is a 2D array of squares
      */
-    public void removePossibilitiesFromRow(int columnNum, int rowNum, Square sudokuSquares[][]) {
+    public Square[][] removePossibilitiesFromRow(int columnNum, int rowNum, Square[][] sudokuSquares) {
         //For every square in the row
         for(int checkColumnNum = 0; checkColumnNum < SUDOKU_MAX_ROW_SQUARES; checkColumnNum++) {
 
@@ -240,6 +259,8 @@ public class Strategy {
                 System.out.println("removePossibilitiesFromRow: Removed possible value " + sudokuSquares[columnNum][rowNum].getValue() + " from  [" + checkColumnNum + "][" + rowNum + "]");
             }
         }
+
+        return sudokuSquares;
     }
 
     /**
@@ -248,7 +269,7 @@ public class Strategy {
      * @param rowNum  This is the row number of the square
      * @param sudokuSquares  This is a 2D array of squares
      */
-    public void removePossibilitiesFromColumn(int columnNum, int rowNum, Square sudokuSquares[][]) {
+    public Square[][] removePossibilitiesFromColumn(int columnNum, int rowNum, Square[][] sudokuSquares) {
 
         for(int checkRowNum = 0; checkRowNum < SUDOKU_MAX_COLUMN_SQUARES; checkRowNum++) {
 
@@ -259,6 +280,8 @@ public class Strategy {
 
             }
         }
+
+        return sudokuSquares;
     }
 
     /**
@@ -267,10 +290,9 @@ public class Strategy {
      * @param rowNum  This is the row number of the square
      * @param sudokuSquares  This is a 2D array of squares
      */
-    public void removePossibilitiesFromBlock(int columnNum, int rowNum, Square sudokuSquares[][]) {
+    public Square[][] removePossibilitiesFromBlock(int columnNum, int rowNum, Square[][] sudokuSquares) {
 
-        int blockNum = 0;
-        blockNum = getBlockNum(columnNum, rowNum);
+        int blockNum = getBlockNum(columnNum, rowNum);
         ArrayList<SquareCoordinate> squareNumbersList = blockNumSquareNumbers.get(blockNum);
 
         //Remove possibilities from every square in block that doesn't have a value
@@ -283,5 +305,7 @@ public class Strategy {
 
             }
         }
+
+        return sudokuSquares;
     }
 }
