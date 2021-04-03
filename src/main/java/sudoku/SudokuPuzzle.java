@@ -73,7 +73,17 @@ public class SudokuPuzzle {
 			}
 		}
 	}
-	
+
+	/**
+	 *
+	 * @param columnNum Column num of square
+	 * @param rowNum Row num of square
+	 * @param values Possible values for the square
+	 */
+	public void setPossibleValues(int columnNum, int rowNum, Integer[] values) {
+		sudokuSquares[columnNum][rowNum].setPossibleValues(values);
+	}
+
 	/**
 	 * This prints all possible values for every square
 	 */

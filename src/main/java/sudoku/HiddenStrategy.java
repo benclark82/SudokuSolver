@@ -12,24 +12,24 @@ public class HiddenStrategy extends Strategy{
     public Square[][] findHiddenSingle(Square[][] sudokuSquares, Integer[] allPossValues) {
 
         //Go through each row and set hidden single candidates
-        for(int i = 0;i < SUDOKU_MAX_ROW_SQUARES;i++) {
+        for(int rowSquare = 0;rowSquare < SUDOKU_MAX_ROW_SQUARES;rowSquare++) {
             //for every possible value check each row to see if there is only one square that has the value
             for(Integer possValue : allPossValues)
-                sudokuSquares = setHiddenSingleInRow(possValue, i, sudokuSquares);
+                sudokuSquares = setHiddenSingleInRow(possValue, rowSquare, sudokuSquares);
         }
 
         //Go through each column and set hidden candidates
-        for(int i = 0;i < SUDOKU_MAX_COLUMN_SQUARES; i++) {
+        for(int columnSquare = 0;columnSquare < SUDOKU_MAX_COLUMN_SQUARES; columnSquare++) {
             //for every possible value check each column to see if there is only one square that has the value
             for(Integer possValue : allPossValues)
-                sudokuSquares = setHiddenSingleInColumn(possValue, i, sudokuSquares);
+                sudokuSquares = setHiddenSingleInColumn(possValue, columnSquare, sudokuSquares);
         }
 
         //Go through each block and set hidden candidates
-        for(int i = 0;i < SUDOKU_MAX_BLOCKS; i++) {
+        for(int blockNum = 0;blockNum < SUDOKU_MAX_BLOCKS; blockNum++) {
             //for every possible value check each block to see if there is only one square that has the value
             for(Integer possValue : allPossValues)
-                sudokuSquares = setHiddenSingleInBlock(possValue, i, sudokuSquares);
+                sudokuSquares = setHiddenSingleInBlock(possValue, blockNum, sudokuSquares);
         }
 
         return sudokuSquares;
@@ -49,13 +49,13 @@ public class HiddenStrategy extends Strategy{
         int tempY = 0;
 
         //Search every square for hidden single
-        for(int i = 0; i < sudokuSquares.length; i++) {
-            if(sudokuSquares[i][rowNum].getValue() == 0) {
-                ArrayList<Integer> possNumList = sudokuSquares[i][rowNum].getPossibleValues();
+        for(int columnNum = 0; columnNum < sudokuSquares.length; columnNum++) {
+            if(sudokuSquares[columnNum][rowNum].getValue() == 0) {
+                ArrayList<Integer> possNumList = sudokuSquares[columnNum][rowNum].getPossibleValues();
                 for(Integer possNumCheck : possNumList) {
                     if(possNum == possNumCheck) {
                         numPossibilities++;
-                        tempX = i;
+                        tempX = columnNum;
                         tempY = rowNum;
                     }
 
