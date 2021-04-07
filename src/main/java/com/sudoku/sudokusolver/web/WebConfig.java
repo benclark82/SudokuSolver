@@ -1,4 +1,4 @@
-package sudoku.web;
+package com.sudoku.sudokusolver.web;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;

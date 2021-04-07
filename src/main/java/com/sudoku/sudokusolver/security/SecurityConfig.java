@@ -30,8 +30,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 //Require that /design and /orders be only accessed for ROLE_USER and everything
                 //else can be accessed by anyone
                 .authorizeRequests()
-                //.antMatchers("/design", "/orders")
-                //.access("hasRole('ROLE_USER')")
+                .antMatchers("/play", "/dashboard")
+                .access("hasRole('ROLE_USER')")
                 .antMatchers("/**").access("permitAll")
 
                 //Designates /login to be the custom login page
@@ -60,7 +60,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     public PasswordEncoder encoder() {
-        return new StandardPasswordEncoder("53cr3t");
+        return new BCryptPasswordEncoder();
     }
 
 
