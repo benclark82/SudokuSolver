@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Sudoku Solver</title>
+</head>
+
+<body>
+<h1>Welcome to...</h1>
+<img th:src="@{/images/sudokusolver_logo.jpg}"/>
+<form method="POST" th:action="@{/logout}" id="logoutForm">
+    <input type="submit" value="Logout"/>
+</form>
+
+<a th:href="@{/play}" id="play">Play Sudoku</a>
+</body>
+</html>
